@@ -19,6 +19,8 @@ function reducer(state, action) {
         questions: action.payload,
         status: "ready",
       };
+    case "dataFailed":
+      return { ...state, status: "Error" };
     default:
       throw new Error("Unknown action");
   }
@@ -29,7 +31,7 @@ function App() {
     fetch("http://localhost:8000/questions")
       .then((res) => res.json())
       .then((data) => dispatch({ type: "dataReceived", payload: data }))
-      .catch((err) => console.log(err));
+      .catch((err) => dispatch({ type: "dataFailed" }));
   });
   return (
     <div className="app">
