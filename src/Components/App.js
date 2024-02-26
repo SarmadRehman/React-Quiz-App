@@ -51,11 +51,21 @@ function reducer(state, action) {
       };
     case "Finished":
       return {
-        ...state,
+        ...initialState,
         status: "Finished",
         highscore:
           state.points > state.highscore ? state.points : state.highscore,
       };
+    case "Retry":
+      return {
+        ...state,
+        status: "loading", // Update status to loading
+        index: 0,
+        answer: null,
+        points: 0,
+        highscore: 0,
+      };
+
     default:
       throw new Error("Active Unknown");
   }
@@ -68,12 +78,18 @@ function App() {
     (prev, cur) => prev + cur.points,
     0
   );
-  useEffect(function () {
-    fetch("http://localhost:8000/questions")
-      .then((res) => res.json())
-      .then((data) => dispatch({ type: "dataReceived", payload: data }))
-      .catch((err) => dispatch({ type: "dataFailed" }));
-  }, []);
+  useEffect(
+    function () {
+      if (status === "loading") {
+        fetch("http://localhost:8000/questions")
+          .then((res) => res.json())
+          .then((data) => dispatch({ type: "dataReceived", payload: data }))
+          .catch((err) => dispatch({ type: "dataFailed" }));
+      }
+    },
+    [status]
+  ); // Trigger effect when status changes
+
   return (
     <div className="app">
       <Header />
@@ -110,6 +126,7 @@ function App() {
             points={points}
             maxPossiblePoints={maxPossiblePoints}
             highscore={highscore}
+            dispatch={dispatch}
           />
         )}
       </Main>
