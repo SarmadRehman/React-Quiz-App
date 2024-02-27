@@ -9,6 +9,8 @@ import Question from "./Question";
 import NextButton from "./NextButton";
 import Progress from "./Progress";
 import FinishScreen from "./FinishScreen";
+import Timer from "./Timer";
+import Footer from "./Footer";
 const initialState = {
   questions: [],
   status: "loading",
@@ -16,6 +18,7 @@ const initialState = {
   answer: null,
   points: 0,
   highscore: 0,
+  secondsRemaining: 0,
   //👇THINKING OF THE STATES IN ADVANCE FOR FURTHER SIMULATION
   //'loading', 'error','ready' ,'active','finished'
 };
@@ -65,6 +68,8 @@ function reducer(state, action) {
         points: 0,
         highscore: 0,
       };
+    case "tick":
+      return { ...state, secondsRemaining: state.secondsRemaining - 1 };
 
     default:
       throw new Error("Active Unknown");
@@ -72,12 +77,22 @@ function reducer(state, action) {
 }
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { questions, status, index, answer, points, highscore } = state;
+  const {
+    questions,
+    status,
+    index,
+    answer,
+    points,
+    highscore,
+    secondsRemaining,
+  } = state;
   const numQuestions = questions.length;
   const maxPossiblePoints = questions.reduce(
     (prev, cur) => prev + cur.points,
     0
   );
+
+  // for changing status dispatcher is called
   useEffect(
     function () {
       if (status === "loading") {
@@ -113,12 +128,15 @@ function App() {
               dispatch={dispatch}
               answer={answer}
             />
-            <NextButton
-              dispatch={dispatch}
-              answer={answer}
-              index={index}
-              numQuestions={numQuestions}
-            />
+            <Footer>
+              <Timer dispatch={dispatch} secondsRemaining={secondsRemaining} />
+              <NextButton
+                dispatch={dispatch}
+                answer={answer}
+                index={index}
+                numQuestions={numQuestions}
+              />
+            </Footer>
           </>
         )}
         {status === "Finished" && (
