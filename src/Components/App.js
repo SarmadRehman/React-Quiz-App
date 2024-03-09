@@ -18,11 +18,11 @@ const initialState = {
   answer: null,
   points: 0,
   highscore: 0,
-  secondsRemaining: 0,
+  secondsRemaining: null,
   //👇THINKING OF THE STATES IN ADVANCE FOR FURTHER SIMULATION
   //'loading', 'error','ready' ,'active','finished'
 };
-
+const secs_per_question = 60;
 function reducer(state, action) {
   switch (action.type) {
     case "dataReceived":
@@ -34,7 +34,11 @@ function reducer(state, action) {
     case "dataFailed":
       return { ...state, status: "error" };
     case "start":
-      return { ...state, status: "active" };
+      return {
+        ...state,
+        status: "active",
+        secondsRemaining: state.questions.length * secs_per_question,
+      };
     case "newAnswer":
       const question = state.questions.at(state.index);
       return {
@@ -69,14 +73,20 @@ function reducer(state, action) {
         highscore: 0,
       };
     case "tick":
-      return { ...state, secondsRemaining: state.secondsRemaining - 1 };
+      return {
+        ...state,
+        secondsRemaining: state.secondsRemaining - 1,
+        status: state.secondsRemaining === 0 ? "Finished" : state.status,
+      };
 
     default:
       throw new Error("Active Unknown");
   }
 }
 function App() {
+  //wanting a function conventionally 'reducer' and an initial state i.e an object
   const [state, dispatch] = useReducer(reducer, initialState);
+  // destructuring proprtties of the object
   const {
     questions,
     status,
@@ -86,6 +96,7 @@ function App() {
     highscore,
     secondsRemaining,
   } = state;
+  // specifcs on needs
   const numQuestions = questions.length;
   const maxPossiblePoints = questions.reduce(
     (prev, cur) => prev + cur.points,
