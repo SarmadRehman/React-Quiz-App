@@ -23,6 +23,7 @@ const initialState = {
   //'loading', 'error','ready' ,'active','finished'
 };
 const secs_per_question = 60;
+
 function reducer(state, action) {
   switch (action.type) {
     case "dataReceived":

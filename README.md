@@ -56,3 +56,40 @@ In your application, you have various state attributes that play specific roles 
 - React re-renders components with updated state.
 
 I hope this Markdown explanation helps clarify the usage of `useReducer` and state management in React! Let me know if you need further assistance.
+
+```jsx
+import { useReducer } from "react";
+
+//reducer for dispatching an event , state : initial object, action : dispatched action or event
+
+function reducer(state, action) {
+  if (action.type === "incremented_age") {
+    return {
+      age: state.age + 1,
+    };
+  }
+
+  throw Error("Unknown action.");
+}
+
+export default function Counter() {
+  // 'state' is defined by giving an initial state object
+  // 'dispatch' is the dispatcher for an action to take in and handle through a reducer
+
+  const [state, dispatch] = useReducer(reducer, { age: 42 });
+
+  return (
+    <>
+           {" "}
+      <button
+        onClick={() => {
+          dispatch({ type: "incremented_age" });
+        }}
+      >
+                Increment age      {" "}
+      </button>
+            <p>Hello! You are {state.age}.</p>   {" "}
+    </>
+  );
+}
+```
