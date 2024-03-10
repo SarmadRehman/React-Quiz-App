@@ -59,7 +59,7 @@ function reducer(state, action) {
       };
     case "Finished":
       return {
-        ...initialState,
+        ...state,
         status: "Finished",
         highscore:
           state.points > state.highscore ? state.points : state.highscore,
@@ -98,7 +98,9 @@ function App() {
     secondsRemaining,
   } = state;
   // specifcs on needs
+  //Number of questions in the array of questions from API
   const numQuestions = questions.length;
+  //over the loaded array
   const maxPossiblePoints = questions.reduce(
     (prev, cur) => prev + cur.points,
     0
